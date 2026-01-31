@@ -164,14 +164,17 @@ module aksCluster './core/aks/aks-cluster.bicep' = {
 
 // Grant AKS pull access to ACR
 var acrPullRoleDefinitionId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-module acrPullRoleAssignment 'app/storage-Access.bicep' = {
+module acrPullRoleAssignment 'core/acr/acr-role-assignment.bicep' = {
   name: 'acrPullRoleAssignment'
   scope: rg
   params: {
-    storageAccountName: containerRegistry.outputs.containerRegistryName
+    containerRegistryName: containerRegistry.outputs.containerRegistryName
     roleDefinitionID: acrPullRoleDefinitionId
     principalID: aksUserAssignedIdentity.outputs.identityPrincipalId
   }
+  dependsOn: [
+    aksCluster
+  ]
 }
 
 // Backing storage for Azure functions api
